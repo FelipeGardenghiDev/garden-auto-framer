@@ -2,7 +2,7 @@
 
 > **Reenquadrador Inteligente de Vídeos para Shorts, Reels & TikTok (16:9 ➔ 9:16)** com detecção facial via Visão Computacional local, layout duplo (Split Facecam + Gameplay), desfoque dinâmico e corte de silêncio.
 
-[![Part of GC Studio](https://img.shields.io/badge/Part%20of-GC%20Studio%20%2F%20Garden%20Apps-06B6D4?style=flat-square)](https://github.com/FelipeGardenghiDev/projeto-homestudio)
+[![Part of GC Studio](https://img.shields.io/badge/Part%20of-GC%20Studio%20%2F%20Garden%20Apps-06B6D4?style=flat-square)](https://github.com/FelipeGardenghiDev/gcstudio)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![PWA](https://img.shields.io/badge/PWA-100%25%20Offline-blueviolet?style=flat-square)](https://web.dev/progressive-web-apps/)
 [![License](https://img.shields.io/badge/License-MIT-emerald?style=flat-square)](LICENSE)
@@ -82,7 +82,7 @@ Para conhecer outras ferramentas da suíte:
 * 🎬 **[GardenCut](https://github.com/FelipeGardenghiDev/garden-cut):** Editor de vídeo não-linear web.
 * 📝 **[Garden Subtitle](https://github.com/FelipeGardenghiDev/garden-subtitle):** Gerador de legendas cinéticas.
 * 🎨 **[Garden Pixel Editor](https://github.com/FelipeGardenghiDev/garden-pixel-editor):** Editor de pixel art e isometria 2:1.
-* 🏛️ **[GC Studio Hub](https://github.com/FelipeGardenghiDev/projeto-homestudio):** Central oficial do estúdio.
+* 🏛️ **[GC Studio Hub](https://github.com/FelipeGardenghiDev/gcstudio):** Central oficial do estúdio.
 
 ---
 
