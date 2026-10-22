@@ -1,4 +1,4 @@
-import { FramerConfig } from '../types';
+import { FramerConfig, NormalizedRect } from '../types';
 
 export const DEFAULT_FRAMER_CONFIG: FramerConfig = {
   layout: 'split-streamer',
@@ -7,11 +7,52 @@ export const DEFAULT_FRAMER_CONFIG: FramerConfig = {
   gameplayRoi: { x: 0.15, y: 0.1, width: 0.7, height: 0.8 },
   blurIntensity: 18,
   panOffset: 0,
+  smoothTrackingLerp: 0.15,
+  splitDividerColor: '#10b981',
+  splitDividerWidth: 4,
   cardTitle: '🔥 EPIC STREAM MOMENT',
   cardSubtitle: 'Follow for daily live clips ➔ @felipegardenghi',
   exportResolution: { width: 1080, height: 1920 },
   fps: 30,
 };
+
+/**
+ * Linear interpolation helper for smooth tracking
+ */
+export function lerpNumber(current: number, target: number, alpha: number): number {
+  const clampedAlpha = Math.max(0, Math.min(1, alpha));
+  return current + (target - current) * clampedAlpha;
+}
+
+/**
+ * Smooth ROI interpolation for dynamic camera tracking
+ */
+export function lerpRect(current: NormalizedRect, target: NormalizedRect, alpha: number): NormalizedRect {
+  return {
+    x: lerpNumber(current.x, target.x, alpha),
+    y: lerpNumber(current.y, target.y, alpha),
+    width: lerpNumber(current.width, target.width, alpha),
+    height: lerpNumber(current.height, target.height, alpha),
+  };
+}
+
+/**
+ * Calculates top (facecam) and bottom (gameplay) split dimensions with boundary safety
+ */
+export function calculateSplitDimensions(
+  _targetWidth: number,
+  targetHeight: number,
+  facecamRatio: number
+): { topHeight: number; bottomHeight: number; dividerY: number } {
+  const safeRatio = Math.max(0.15, Math.min(0.85, facecamRatio));
+  const topHeight = Math.round(targetHeight * safeRatio);
+  const bottomHeight = targetHeight - topHeight;
+  return {
+    topHeight,
+    bottomHeight,
+    dividerY: topHeight
+  };
+}
 
 /**
  * Renders a single frame of the 16:9 source video into 9:16 vertical canvas.
@@ -64,8 +105,7 @@ function renderSplitStreamer(
   tWidth: number,
   tHeight: number
 ) {
-  const topH = Math.round(tHeight * config.facecamHeightRatio);
-  const bottomH = tHeight - topH;
+  const { topHeight: topH, bottomHeight: bottomH } = calculateSplitDimensions(tWidth, tHeight, config.facecamHeightRatio);
 
   // 1. Draw Top Facecam Crop
   const fcRoi = config.facecamRoi;
@@ -78,9 +118,11 @@ function renderSplitStreamer(
   drawImageCover(ctx, video, sx, sy, sWidth, sHeight, 0, 0, tWidth, topH);
 
   // 2. Divider Line with Neon Glow
-  ctx.fillStyle = '#10b981';
-  ctx.fillRect(0, topH - 3, tWidth, 6);
-  ctx.shadowColor = '#10b981';
+  const dividerColor = config.splitDividerColor || '#10b981';
+  const dividerWidth = config.splitDividerWidth || 4;
+  ctx.fillStyle = dividerColor;
+  ctx.fillRect(0, topH - Math.round(dividerWidth / 2), tWidth, dividerWidth);
+  ctx.shadowColor = dividerColor;
   ctx.shadowBlur = 10;
   ctx.fillRect(0, topH - 1, tWidth, 2);
   ctx.shadowBlur = 0;

@@ -14,6 +14,9 @@ export interface FramerConfig {
   gameplayRoi: NormalizedRect;
   blurIntensity: number;       // px
   panOffset: number;          // -1 to 1 horizontal pan
+  smoothTrackingLerp?: number; // 0.05 to 0.3 for dynamic lerping
+  splitDividerColor?: string; // e.g. '#10b981'
+  splitDividerWidth?: number; // e.g. 4
   cardTitle: string;
   cardSubtitle: string;
   exportResolution: {

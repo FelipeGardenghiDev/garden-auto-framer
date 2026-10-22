@@ -1,6 +1,6 @@
 # 🌿 Garden Auto-Framer
 
-> **Reenquadrador Inteligente de Vídeos para Shorts, Reels & TikTok (16:9 ➔ 9:16)** com detecção facial via Visão Computacional local, layout duplo (Split Facecam + Gameplay), desfoque dinâmico e corte de silêncio.
+> **Reenquadrador Inteligente de Vídeos para Shorts, Reels & TikTok (16:9 ➔ 9:16)** com detecção facial via Visão Computacional local, layout duplo (Split Facecam + Gameplay), rastreamento com interpolação suave (Lerp), desfoque dinâmico e corte de silêncio.
 
 [![Part of GC Studio](https://img.shields.io/badge/Part%20of-GC%20Studio%20%2F%20Garden%20Apps-06B6D4?style=flat-square)](https://github.com/FelipeGardenghiDev/gcstudio)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
@@ -16,13 +16,20 @@ A maior dor de criadores que gravam podcasts, aulas, entrevistas e gameplays em 
 Editar isso manualmente em Premiere ou DaVinci exige duplicar trilhas, aplicar máscaras na mão, reenquadrar o rosto quando a pessoa se mexe e renderizar clipes um a um.
 
 O **Garden Auto-Framer automatiza esse fluxo 100% no navegador**:
-* **Detecção Facial Contínua (MediaPipe Face Detection):** Localiza a face do criador e centraliza suavemente no terço superior (*Face Tracking com interpolação suave sem solavancos*).
+* **Detecção Facial Contínua & Tracking Lerp:** Localiza a face do criador e centraliza suavemente no terço superior através de interpolação linear dinâmica (*Smooth ROI Lerp*), eliminando solavancos e trepidações na câmera.
 * **Composição Multi-Layout em 1 Clique:**
-  * **Split-Screen Streamer:** Rosto no topo (35% da tela) + Gameplay/Tela no centro/inferior (65%).
+  * **Split-Screen Streamer:** Rosto no topo com razão customizável (15% a 85% da tela, divisor neon estilizado) + Gameplay/Tela no centro/inferior.
   * **Smart Gaussian Blur Background:** Vídeo horizontal centralizado com fundo espelhado e desfocado para preencher as bordas verticais.
   * **Auto-Pan Tracking:** Câmera que acompanha o objeto ou pessoa em movimento pela tela horizontal.
 * **Corte Inteligente de Silêncio (*Silence Stripper*):** Remove automaticamente pausas e respirações longas para elevar o ritmo do vídeo e a retenção do público.
 * **Sincronização com o GardenCut:** Exporta o projeto recortado diretamente como clipe na timeline do **GardenCut** para retoques finais de cor, música e legendas.
+
+---
+
+## 🚀 Deploy Web & Aplicativo Android (APK)
+
+* **Web App (GitHub Pages):** [felipegardenghidev.github.io/garden-auto-framer](https://felipegardenghidev.github.io/garden-auto-framer/)
+* **Download do APK Android:** A cada commit na branch principal, o GitHub Actions compila automaticamente o APK nativo através do pipeline Capacitor + Gradle e disponibiliza o artefato `garden-auto-framer-debug-apk` para download direto na aba **Actions** do repositório, dispensando o Android Studio na máquina local.
 
 ---
 
@@ -36,6 +43,7 @@ flowchart TD
 
     subgraph Analysis ["Análise em Tempo Real"]
         FACE["MediaPipe Face Detector<br/>(Coordenadas X/Y da Face)"]
+        LERP["Dynamic Tracking Lerp<br/>(Suavização de Câmera)"]
         SILENCE["Audio Silence Detector<br/>(RMS & Decibéis por Janela)"]
     end
 
@@ -51,10 +59,8 @@ flowchart TD
         GARDENCUT["Timeline Clipes no GardenCut"]
     end
 
-    FILE --> FACE
-    FILE --> SILENCE
-    FACE --> CANVAS
-    SILENCE --> CANVAS
+    FILE --> FACE --> LERP --> CANVAS
+    FILE --> SILENCE --> CANVAS
     CANVAS --> TOP
     CANVAS --> BOTTOM
     CANVAS --> BLUR

@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { DEFAULT_FRAMER_CONFIG } from '../src/core/framer-engine';
+import {
+  DEFAULT_FRAMER_CONFIG,
+  lerpNumber,
+  lerpRect,
+  calculateSplitDimensions
+} from '../src/core/framer-engine';
 import { createGardenCutExport } from '../src/core/gardencut-export';
 
 describe('Garden Auto-Framer - Core Engine & Config', () => {
@@ -26,6 +31,35 @@ describe('Garden Auto-Framer - Core Engine & Config', () => {
   it('facecamHeightRatio is in a healthy streamer ratio range', () => {
     expect(DEFAULT_FRAMER_CONFIG.facecamHeightRatio).toBeGreaterThanOrEqual(0.25);
     expect(DEFAULT_FRAMER_CONFIG.facecamHeightRatio).toBeLessThanOrEqual(0.55);
+  });
+
+  it('interpolates numbers and ROIs with smooth tracking lerp', () => {
+    expect(lerpNumber(0, 100, 0.5)).toBe(50);
+    expect(lerpNumber(10, 20, 0)).toBe(10);
+    expect(lerpNumber(10, 20, 1)).toBe(20);
+
+    const r1 = { x: 0, y: 0, width: 0.5, height: 0.5 };
+    const r2 = { x: 0.2, y: 0.4, width: 0.3, height: 0.3 };
+    const mid = lerpRect(r1, r2, 0.5);
+
+    expect(mid.x).toBeCloseTo(0.1);
+    expect(mid.y).toBeCloseTo(0.2);
+    expect(mid.width).toBeCloseTo(0.4);
+    expect(mid.height).toBeCloseTo(0.4);
+  });
+
+  it('calculates safe split dimensions for streamer layout', () => {
+    const res = calculateSplitDimensions(1080, 1920, 0.38);
+    expect(res.topHeight).toBe(Math.round(1920 * 0.38));
+    expect(res.bottomHeight).toBe(1920 - res.topHeight);
+    expect(res.dividerY).toBe(res.topHeight);
+
+    // Clamps extreme ratios
+    const clampedLow = calculateSplitDimensions(1080, 1920, 0.05);
+    expect(clampedLow.topHeight).toBe(Math.round(1920 * 0.15));
+
+    const clampedHigh = calculateSplitDimensions(1080, 1920, 0.95);
+    expect(clampedHigh.topHeight).toBe(Math.round(1920 * 0.85));
   });
 });
 
